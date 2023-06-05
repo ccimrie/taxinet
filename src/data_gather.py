@@ -76,7 +76,7 @@ class RobotTaxi(object):
 
             rand_pos=np.array([np.random.random()*3,(1-2*np.random.random())*0.5])
             rand_angle=(1-2*np.random.random())*(np.pi/2.0)
-            self.smsClient('robot', rand_pos,np.sin(rand_angle*0.5))
+            self.smsClient('robot', rand_pos, rand_angle)
 
             self.test+=1
             self.count+=1
@@ -125,16 +125,16 @@ class RobotTaxi(object):
         except rospy.ServiceException as e:
             print("Service call failed: %s"%e)
 
-    def smsClient(self, model_name, pos, orient):
+    def smsClient(self, model_name, pos, euler):
         state_msg = ModelState()
         state_msg.model_name = model_name
         state_msg.pose.position.x = pos[0]
         state_msg.pose.position.y = pos[1]
-        state_msg.pose.position.z = 0.0
+        state_msg.pose.position.z = 0
         state_msg.pose.orientation.x = 0
         state_msg.pose.orientation.y = 0
-        state_msg.pose.orientation.z = orient
-        state_msg.pose.orientation.w = 1.0
+        state_msg.pose.orientation.z = np.sin(euler/2.0)
+        state_msg.pose.orientation.w = np.cos(euler/2.0)
 
         rospy.wait_for_service('/gazebo/set_model_state')
         try:
